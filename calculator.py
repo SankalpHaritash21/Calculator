@@ -21,9 +21,22 @@ root= tk.Tk()
 root.title("Calculator")
 root.geometry("400x500")
 root.resizable(False, False)
+root.config(bg="#121212")
 
 
-display= tk.Entry(root, font=('Arial',20),justify="right")
+display= tk.Entry(root,
+    font=("Arial", 20),
+    justify="right",
+    bg="#1E1E1E",
+    fg="white",
+    insertbackground="white",
+    relief="flat",
+    highlightthickness=1,
+    highlightbackground="#333333",
+    highlightcolor="#333333",
+    readonlybackground="#1E1E1E")
+
+display.config(state="readonly")
 
 display.pack(fill='x', padx=10, pady=10)
 
@@ -82,14 +95,19 @@ def keyboard_handler(event):
         clear()
 
 
-button_Frame= tk.Frame(root)
+button_Frame= tk.Frame(root, bg='#121212')
 button_Frame.pack()
 
 for text, (r,c) in button.items():
-    btn=tk.Button(button_Frame, text=text, font=("Arial",18), width=5, height=2,
+    btn=tk.Button(button_Frame, text=text, font=("Arial",18), width=5, height=2, bg='#2A2A2A', fg='white',
+                  activebackground='#3A3A3A',
+                  activeforeground='white',
+                  borderwidth=0,
               command=lambda t=text: press(t))
     
     btn.grid(row=r, column=c, padx=5, pady=5)
+
+
 
 for op, (r,c) in opreator.items():
     if op == 'C':
@@ -101,12 +119,19 @@ for op, (r,c) in opreator.items():
     else:
         cmd=lambda o=op: press(o)
 
+    color = "#FF9500" if op in operator_set or op in ['=', 'C'] else "#2A2A2A"
+
     btn = tk.Button(
         button_Frame,
         text=op,
         font=("Arial", 18),
         width=5,
         height=2,
+        bg=color,
+        fg="white",
+        activebackground="#FFA733",
+        activeforeground="white",
+        borderwidth=0,
         command=cmd
     )
     btn.grid(row=r, column=c, padx=5, pady=5)
