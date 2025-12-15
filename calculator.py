@@ -1,5 +1,7 @@
 import tkinter as tk
 
+root= tk.Tk()
+
 button={
     '7':(0,0), '8':(0,1), '9':(0,2),
     '4':(1,0), '5':(1,1), '6':(1,2),
@@ -16,127 +18,133 @@ opreator={
 
 operator_set= {'/', '*', '-', '+'}
 
+class Calculator:
+    def __init__(self, root):
+        self.root=root
+        self.root.title("Calculator")
+        self.root.geometry("400x500")
+        self.root.resizable(False, False)
+        self.root.config(bg="#121212")
+        self.display= tk.Entry(root,
+            font=("Arial", 20),
+            justify="right",
+            bg="#1E1E1E",
+            fg="white",
+            insertbackground="white",
+            relief="flat",
+            highlightthickness=1,
+            highlightbackground="#333333",
+            highlightcolor="#333333",
+            readonlybackground="#1E1E1E")
+        
+        self.display.config(state="readonly")
+        self.display.pack(fill='x', padx=10, pady=10)
+        
+        self.button_Frame= tk.Frame(root, bg='#121212')
+        self.button_Frame.pack()
 
-root= tk.Tk()
-root.title("Calculator")
-root.geometry("400x500")
-root.resizable(False, False)
-root.config(bg="#121212")
+
+        
+        
+        
+        for text, (r,c) in button.items():
+            btn=tk.Button(self.button_Frame, text=text, font=("Arial",18), width=5, height=2, bg='#2A2A2A', fg='white',
+                    activebackground='#3A3A3A',
+                    activeforeground='white',
+                    borderwidth=0,
+                command=lambda t=text: self.press(t))
+        
+            btn.grid(row=r, column=c, padx=5, pady=5)
 
 
-display= tk.Entry(root,
-    font=("Arial", 20),
-    justify="right",
-    bg="#1E1E1E",
-    fg="white",
-    insertbackground="white",
-    relief="flat",
-    highlightthickness=1,
-    highlightbackground="#333333",
-    highlightcolor="#333333",
-    readonlybackground="#1E1E1E")
 
-display.config(state="readonly")
+        for op, (r,c) in opreator.items():
+            if op == 'C':
+                cmd=self.clear
+            elif op == '=':
+                cmd=self.calculate
+            elif op == '<-':
+                cmd=self.delete_last
+            else:
+                cmd=lambda o=op: self.press(o)
 
-display.pack(fill='x', padx=10, pady=10)
+            color = "#FF9500" if op in operator_set or op in ['=', 'C'] else "#2A2A2A"
 
-def press(key):
-    display.config(state="normal")
-    current= display.get()
+            btn = tk.Button(
+                self.button_Frame,
+                text=op,
+                font=("Arial", 18),
+                width=5,
+                height=2,
+                bg=color,
+                fg="white",
+                activebackground="#FFA733",
+                activeforeground="white",
+                borderwidth=0,
+                command=cmd
+            )
+            btn.grid(row=r, column=c, padx=5, pady=5)
 
-    if not current and key in operator_set:
-        display.config(state="readonly")
-        return
+        self.root.bind("<Key>", self.keyboard_handler)
+
+    def press(self, key):
+        self.display.config(state="normal")
+        current= self.display.get()
+
+        if not current and key in operator_set:
+            self.display.config(state="readonly")
+            return
+        
+        if current and current[-1] in operator_set and key in operator_set:
+            self.display.config(state="readonly")
+            return
+        
+        self.display.insert(tk.END, key)
+        self.display.config(state="readonly")
+
+    def clear(self):
+        self.display.config(state="normal")
+        self.display.delete(0, tk.END)
+        self.display.config(state="readonly")
+
+    def calculate(self):
+        self.display.config(state="normal")
+        try:
+            result= eval(self.display.get())
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, str(result))
+        except:
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, "Error")
+        self.display.config(state="readonly")
+
+    def delete_last(self):
+        self.display.config(state="normal")
+        current= self.display.get()
+
+        if current:
+            self.display.delete(len(current)-1, tk.END)
+
+        self.display.config(state="readonly")
+
+    def keyboard_handler(self, event):
+        key = event.keysym
+        char= event.char
+
+        if char.isdigit() or char in operator_set:
+            self.press(char)
+        elif key == "Return":
+            self.calculate()
+        elif key == "BackSpace":
+            self.delete_last()
+        elif key == "Escape":
+            self.clear()
+
+
     
-    if current and current[-1] in operator_set and key in operator_set:
-        display.config(state="readonly")
-        return
+
     
-    display.insert(tk.END, key)
-    display.config(state="readonly")
 
 
-def clear():
-    display.config(state="normal")
-    display.delete(0, tk.END)
-    display.config(state="readonly")
-
-def calculate():
-    display.config(state="normal")
-    try:
-        result= eval(display.get())
-        display.delete(0, tk.END)
-        display.insert(tk.END, str(result))
-    except:
-        display.delete(0, tk.END)
-        display.insert(tk.END, "Error")
-    display.config(state="readonly")
-
-def delete_last():
-    display.config(state="normal")
-    current= display.get()
-
-    if current:
-        display.delete(len(current)-1, tk.END)
-
-    display.config(state="readonly")
-
-def keyboard_handler(event):
-    key = event.keysym
-    char= event.char
-
-    if char.isdigit() or char in operator_set:
-        press(char)
-    elif key == "Return":
-        calculate()
-    elif key == "BackSpace":
-        delete_last()
-    elif key == "Escape":
-        clear()
-
-
-button_Frame= tk.Frame(root, bg='#121212')
-button_Frame.pack()
-
-for text, (r,c) in button.items():
-    btn=tk.Button(button_Frame, text=text, font=("Arial",18), width=5, height=2, bg='#2A2A2A', fg='white',
-                  activebackground='#3A3A3A',
-                  activeforeground='white',
-                  borderwidth=0,
-              command=lambda t=text: press(t))
-    
-    btn.grid(row=r, column=c, padx=5, pady=5)
-
-
-
-for op, (r,c) in opreator.items():
-    if op == 'C':
-        cmd=clear
-    elif op == '=':
-        cmd=calculate
-    elif op == '<-':
-        cmd=delete_last
-    else:
-        cmd=lambda o=op: press(o)
-
-    color = "#FF9500" if op in operator_set or op in ['=', 'C'] else "#2A2A2A"
-
-    btn = tk.Button(
-        button_Frame,
-        text=op,
-        font=("Arial", 18),
-        width=5,
-        height=2,
-        bg=color,
-        fg="white",
-        activebackground="#FFA733",
-        activeforeground="white",
-        borderwidth=0,
-        command=cmd
-    )
-    btn.grid(row=r, column=c, padx=5, pady=5)
-
-
-
-root.bind("<Key>", keyboard_handler)
+app= Calculator(root)
 root.mainloop()
