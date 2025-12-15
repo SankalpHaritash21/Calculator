@@ -2,24 +2,24 @@ import tkinter as tk
 
 root= tk.Tk()
 
-button={
-    '7':(0,0), '8':(0,1), '9':(0,2),
-    '4':(1,0), '5':(1,1), '6':(1,2),
-    '1':(2,0), '2':(2,1), '3':(2,2),
-    '0':(3,1)
-}
-
-opreator={
-    '/':(0,3), '*':(1,3), '-':(2,3), '+':(3,3),
-    'C':(3,0), '=':(3,2),
-    '<-':(4,2)
-
-}
-
-operator_set= {'/', '*', '-', '+'}
-
 class Calculator:
     def __init__(self, root):
+
+        self.button={
+            '7':(0,0), '8':(0,1), '9':(0,2),
+            '4':(1,0), '5':(1,1), '6':(1,2),
+            '1':(2,0), '2':(2,1), '3':(2,2),
+            '0':(3,1)
+        }
+
+        self.opreator={
+            '/':(0,3), '*':(1,3), '-':(2,3), '+':(3,3),
+            'C':(3,0), '=':(3,2),
+            '<-':(4,2)
+
+        }
+
+        self.operator_set= {'/', '*', '-', '+'}
         self.root=root
         self.root.title("Calculator")
         self.root.geometry("400x500")
@@ -39,7 +39,7 @@ class Calculator:
         
         self.display.config(state="readonly")
         self.display.pack(fill='x', padx=10, pady=10)
-        
+
         self.button_Frame= tk.Frame(root, bg='#121212')
         self.button_Frame.pack()
 
@@ -47,7 +47,7 @@ class Calculator:
         
         
         
-        for text, (r,c) in button.items():
+        for text, (r,c) in self.button.items():
             btn=tk.Button(self.button_Frame, text=text, font=("Arial",18), width=5, height=2, bg='#2A2A2A', fg='white',
                     activebackground='#3A3A3A',
                     activeforeground='white',
@@ -58,7 +58,7 @@ class Calculator:
 
 
 
-        for op, (r,c) in opreator.items():
+        for op, (r,c) in self.opreator.items():
             if op == 'C':
                 cmd=self.clear
             elif op == '=':
@@ -68,7 +68,7 @@ class Calculator:
             else:
                 cmd=lambda o=op: self.press(o)
 
-            color = "#FF9500" if op in operator_set or op in ['=', 'C'] else "#2A2A2A"
+            color = "#FF9500" if op in self.operator_set or op in ['=', 'C'] else "#2A2A2A"
 
             btn = tk.Button(
                 self.button_Frame,
@@ -91,11 +91,11 @@ class Calculator:
         self.display.config(state="normal")
         current= self.display.get()
 
-        if not current and key in operator_set:
+        if not current and key in self.operator_set:
             self.display.config(state="readonly")
             return
         
-        if current and current[-1] in operator_set and key in operator_set:
+        if current and current[-1] in self.operator_set and key in self.operator_set:
             self.display.config(state="readonly")
             return
         
@@ -131,7 +131,7 @@ class Calculator:
         key = event.keysym
         char= event.char
 
-        if char.isdigit() or char in operator_set:
+        if char.isdigit() or char in self.operator_set:
             self.press(char)
         elif key == "Return":
             self.calculate()
