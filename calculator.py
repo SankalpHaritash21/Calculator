@@ -15,12 +15,21 @@ class Calculator:
         self.opreator={
             '/':(0,3), '*':(1,3), '-':(2,3), '+':(3,3),
             'C':(3,0), '=':(3,2),
-            '<-':(4,2)
+            '<-':(4,3)
 
         }
 
         self.operator_set= {'/', '*', '-', '+'}
+
+        self.memory_buttons=[
+            ("M+", self.memory_add),
+            ("M-", self.memory_subtract),
+            ("MR", self.memory_recall)
+        ]
+
+
         self.root=root
+        self.memory=0 #State Variable Example
         self.root.title("Calculator")
         self.root.geometry("400x500")
         self.root.resizable(False, False)
@@ -40,15 +49,15 @@ class Calculator:
         self.display.config(state="readonly")
         self.display.pack(fill='x', padx=10, pady=10)
 
-        self.button_Frame= tk.Frame(root, bg='#121212')
-        self.button_Frame.pack()
+        self.button_frame= tk.Frame(root, bg='#121212')
+        self.button_frame.pack()
 
 
         
         
         
         for text, (r,c) in self.button.items():
-            btn=tk.Button(self.button_Frame, text=text, font=("Arial",18), width=5, height=2, bg='#2A2A2A', fg='white',
+            btn=tk.Button(self.button_frame, text=text, font=("Arial",18), width=5, height=2, bg='#2A2A2A', fg='white',
                     activebackground='#3A3A3A',
                     activeforeground='white',
                     borderwidth=0,
@@ -71,7 +80,7 @@ class Calculator:
             color = "#FF9500" if op in self.operator_set or op in ['=', 'C'] else "#2A2A2A"
 
             btn = tk.Button(
-                self.button_Frame,
+                self.button_frame,
                 text=op,
                 font=("Arial", 18),
                 width=5,
@@ -86,6 +95,43 @@ class Calculator:
             btn.grid(row=r, column=c, padx=5, pady=5)
 
         self.root.bind("<Key>", self.keyboard_handler)
+
+        for i, (text, cmd) in enumerate(self.memory_buttons):
+            btn = tk.Button(
+                self.button_frame,
+                text=text,
+                font=("Arial", 18),
+                width=5,
+                height=2,
+                bg="#444444",
+                fg="white",
+                borderwidth=0,
+                command=cmd
+                )
+            btn.grid(row=4, column=i, padx=5, pady=5)
+
+    def memory_add(self):
+        try:
+            self.memory += float(self.display.get())
+        except:
+            pass
+
+    def memory_subtract(self):
+        try:
+            self.memory -= float(self.display.get())
+        except:
+            pass
+
+    def memory_recall(self):
+        self.display.config(state="normal")
+        self.display.delete(0, tk.END)
+        self.display.insert(tk.END, str(self.memory))
+        self.display.config(state="readonly")
+
+
+
+
+
 
     def press(self, key):
         self.display.config(state="normal")
@@ -147,4 +193,7 @@ class Calculator:
 
 
 app= Calculator(root)
+
+# app.memory_add()  # Example usage of memory function
+# app.memory_recall()  # Example usage of memory function
 root.mainloop()
