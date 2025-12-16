@@ -1,4 +1,5 @@
 import tkinter as tk
+import math
 
 root= tk.Tk()
 
@@ -27,7 +28,7 @@ class Calculator:
             ("MR", self.memory_recall)
         ]
 
-        self.scientific_buttons=['sin', 'cos', 'tan', 'log', "√"]
+        self.scientific_buttons=['sin', 'cos', 'tan', 'log', "√", "x²"]
 
 
         self.root=root
@@ -133,6 +134,14 @@ class Calculator:
 
             if text == "√":
                 cmd= self.handle_sqrt
+            elif text == "x²":
+                cmd=self.square
+            elif text=="sin":
+                cmd=self.sin
+            elif text=="cos":
+                cmd=self.cos
+            elif text=="tan":
+                cmd=self.tan
             else:
                 cmd= None
 
@@ -256,9 +265,11 @@ class Calculator:
 
         self.display.config(state="readonly")
 
-
-
     def sqrt_init(self, num):
+        """
+        Helper function: Finds the integer part of the square root 
+        using Binary Search. Time Complexity: O(log N)
+        """
         if num < 0:
             raise ValueError("Square root not defined for negative numbers")
         
@@ -281,6 +292,10 @@ class Calculator:
         return ans
     
     def sqrt(self, num, precision=5):
+        """
+        Calculates square root with adjustable precision.
+        Combines Binary Search (integer) with Incremental Refinement (decimal).
+        """
         num=float(num)
 
         if num<0:
@@ -296,6 +311,88 @@ class Calculator:
             increment /= 10
 
         return root
+
+    def square(self):
+        """
+        Computes the square of the currently displayed value (x^2).
+        
+        Algorithm:
+        - Direct arithmetic multiplication (n * n).
+        - Relies on Python's optimized float implementation.
+        
+        Complexity:
+        - Time: O(1) - Constant time operation.
+        - Space: O(1) - No auxiliary data structures used.
+        
+        Error Handling:
+        - Catches invalid inputs (non-numeric strings) and displays "Error".
+        """
+        self.display.config(state="normal")
+        try:
+            value= float(self.display.get())
+            result= value * value
+            self.display.delete(0,tk.END)
+            self.display.insert(tk.END, str(result))
+        except:
+            self.display.delete(0,tk.END)
+            self.display.insert(tk.END, "Error")
+        self.display.config(state="readonly")
+
+    def sin(self):
+        self.display.config(state="normal")
+        try:
+            value= float(self.display.get())
+            radians= math.radians(value)
+            result= math.sin(radians)
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, str(round(result, 5)))
+        except:
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, "Error")
+
+    def cos(self):
+        self.display.config(state="normal")
+        try:
+            value= float(self.display.get())
+            radians= math.radians(value)
+            result= math.cos(radians)
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, str(round(result, 5)))
+        except:
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, "Error")
+
+
+        self.display.config(state="readonly")
+
+    def tan(self):
+        self.display.config(state="normal")
+        try:
+            value= float(self.display.get())
+            radians= math.radians(value)
+
+            # Guard near 90 + k*180 degrees where tan is undefined
+
+            if abs(math.cos(radians)) < 1e-10:
+                raise ValueError
+            result= math.tan(radians)
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, str(round(result, 5)))
+        except:
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, "Error")
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
