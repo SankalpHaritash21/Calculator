@@ -27,9 +27,12 @@ class Calculator:
             ("MR", self.memory_recall)
         ]
 
+        self.scientific_buttons=['sin', 'cos', 'tan', 'log', "√"]
+
 
         self.root=root
         self.memory=0 #State Variable Example
+        self.scientific_mode= False
         self.root.title("Calculator")
         self.root.geometry("400x500")
         self.root.resizable(False, False)
@@ -51,6 +54,8 @@ class Calculator:
 
         self.button_frame= tk.Frame(root, bg='#121212')
         self.button_frame.pack()
+        self.scientific_frame= tk.Frame(root, bg='#121212')
+        self.scientific_frame.pack_forget()
 
 
         
@@ -110,6 +115,43 @@ class Calculator:
                 )
             btn.grid(row=4, column=i, padx=5, pady=5)
 
+        btn_scientific = tk.Button(
+            self.button_frame,
+            text="Sci",
+            font=("Arial", 18),
+            width=5,
+            height=2,
+            bg="#444444",
+            fg="white",
+            borderwidth=0,
+            command=self.scientific_toggle
+        )
+        btn_scientific.grid(row=5, column=3, padx=5, pady=5)
+
+
+        for i, text in enumerate(self.scientific_buttons):
+
+            if text == "√":
+                cmd= self.handle_sqrt
+            else:
+                cmd= None
+
+            btn= tk.Button(
+                self.scientific_frame,
+                text=text,
+                font=("Arial", 10),
+                width=5,
+                height=2,
+                bg="#2A2A2A",
+                fg="white",
+                borderwidth=0,
+                command=cmd
+            )
+
+            btn.grid(row=0, column=i, padx=5, pady=5)
+
+
+
     def memory_add(self):
         try:
             self.memory += float(self.display.get())
@@ -128,7 +170,17 @@ class Calculator:
         self.display.insert(tk.END, str(self.memory))
         self.display.config(state="readonly")
 
-
+    def scientific_toggle(self):
+        try:
+            self.scientific_mode= not self.scientific_mode
+            if self.scientific_mode:
+                self.scientific_frame.pack(pady=10)
+                self.root.geometry("400x700")
+            else:
+                self.scientific_frame.pack_forget()
+                self.root.geometry("400x500")           
+        except:
+            pass
 
 
 
@@ -186,14 +238,66 @@ class Calculator:
         elif key == "Escape":
             self.clear()
 
+    def handle_sqrt(self):
+        self.display.config(state="normal")
+        try:
+            value= self.display.get()
+            if not value:
+                return
+            
+            result= self.sqrt(float(value))
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, str(result))
 
-    
 
+        except:
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, "Error")
+
+        self.display.config(state="readonly")
+
+
+
+    def sqrt_init(self, num):
+        if num < 0:
+            raise ValueError("Square root not defined for negative numbers")
+        
+        if num == 0 or num == 1:
+            return num
+        
+        low, high, ans= 1, num, 0
+
+        while low <= high:
+            mid= (low + high)//2
+            if mid*mid == num:
+                return mid
+            elif mid < num // mid:
+                ans= mid
+                low= mid + 1
+            else:
+                high= mid -1
+        
+
+        return ans
     
+    def sqrt(self, num, precision=5):
+        num=float(num)
+
+        if num<0:
+            raise ValueError
+        
+        root= self.sqrt_init(int(num))
+        increment= 0.1
+
+
+        for _ in range(precision):
+            while (root + increment) * (root + increment) <= num:
+                root += increment
+            increment /= 10
+
+        return root
+
 
 
 app= Calculator(root)
-
-# app.memory_add()  # Example usage of memory function
-# app.memory_recall()  # Example usage of memory function
 root.mainloop()
