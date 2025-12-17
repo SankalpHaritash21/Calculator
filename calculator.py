@@ -16,7 +16,7 @@ class Calculator:
         self.opreator={
             '/':(0,3), '*':(1,3), '-':(2,3), '+':(3,3),
             'C':(3,0), '=':(3,2),
-            '<-':(4,3)
+            '<-':(4,3), '.':(5,2)
 
         }
 
@@ -57,6 +57,7 @@ class Calculator:
         self.button_frame.pack()
         self.scientific_frame= tk.Frame(root, bg='#121212')
         self.scientific_frame.pack_forget()
+        self.angle_mode= 'DEG'
 
 
         
@@ -159,6 +160,20 @@ class Calculator:
 
             btn.grid(row=0, column=i, padx=5, pady=5)
 
+        self. angle_button= tk.Button(
+            self.scientific_frame,
+            text="DEG",
+            font=("Arial", 10),
+            width=5,
+            height=2,
+            bg="#777777",
+            fg="white",
+            borderwidth=0,
+            command=self.toggle_angle_mode
+        )
+
+        self.angle_button.grid(row=1, column=0, padx=5, pady=5)
+
 
 
     def memory_add(self):
@@ -206,6 +221,15 @@ class Calculator:
             self.display.config(state="readonly")
             return
         
+        if key == '.':
+            last_number= current
+            for op in self.operator_set:
+                if op in current:
+                    last_number= current.split(op)[-1]
+            if '.' in last_number:
+                self.display.config(state="readonly")
+                return
+        
         self.display.insert(tk.END, key)
         self.display.config(state="readonly")
 
@@ -238,7 +262,7 @@ class Calculator:
         key = event.keysym
         char= event.char
 
-        if char.isdigit() or char in self.operator_set:
+        if char.isdigit() or char in self.operator_set or char == '.':
             self.press(char)
         elif key == "Return":
             self.calculate()
@@ -347,12 +371,17 @@ class Calculator:
     def tan(self):
         self.apply_trig(math.tan, need_guard=True)
 
-        
+
     def apply_trig(self, trig_func, need_guard=False):
         self.display.config(state="normal")
         try:
             value= float(self.display.get())
-            radians= math.radians(value)
+            # radians= math.radians(value)
+
+            if self.angle_mode=='DEG':
+                radians= math.radians(value)
+            else:
+                radians= value
 
             if need_guard and abs(math.cos(radians)) < 1e-10:
                 raise ValueError
@@ -366,7 +395,12 @@ class Calculator:
 
         self.display.config(state="readonly")
 
-        
+    def toggle_angle_mode(self):
+        if self.angle_mode=='DEG':
+            self.angle_mode='RAD'
+        else:
+            self.angle_mode='DEG'
+        self.angle_button.config(text=self.angle_mode)   
 
 
 
