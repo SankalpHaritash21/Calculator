@@ -339,52 +339,34 @@ class Calculator:
         self.display.config(state="readonly")
 
     def sin(self):
-        self.display.config(state="normal")
-        try:
-            value= float(self.display.get())
-            radians= math.radians(value)
-            result= math.sin(radians)
-            self.display.delete(0, tk.END)
-            self.display.insert(tk.END, str(round(result, 5)))
-        except:
-            self.display.delete(0, tk.END)
-            self.display.insert(tk.END, "Error")
+        self.apply_trig(math.sin)
 
     def cos(self):
+        self.apply_trig(math.cos)       
+
+    def tan(self):
+        self.apply_trig(math.tan, need_guard=True)
+
+        
+    def apply_trig(self, trig_func, need_guard=False):
         self.display.config(state="normal")
         try:
             value= float(self.display.get())
             radians= math.radians(value)
-            result= math.cos(radians)
+
+            if need_guard and abs(math.cos(radians)) < 1e-10:
+                raise ValueError
+            
+            result= trig_func(radians)
             self.display.delete(0, tk.END)
             self.display.insert(tk.END, str(round(result, 5)))
         except:
             self.display.delete(0, tk.END)
             self.display.insert(tk.END, "Error")
-
 
         self.display.config(state="readonly")
 
-    def tan(self):
-        self.display.config(state="normal")
-        try:
-            value= float(self.display.get())
-            radians= math.radians(value)
-
-            # Guard near 90 + k*180 degrees where tan is undefined
-
-            if abs(math.cos(radians)) < 1e-10:
-                raise ValueError
-            result= math.tan(radians)
-            self.display.delete(0, tk.END)
-            self.display.insert(tk.END, str(round(result, 5)))
-        except:
-            self.display.delete(0, tk.END)
-            self.display.insert(tk.END, "Error")
-
-
-
-
+        
 
 
 
