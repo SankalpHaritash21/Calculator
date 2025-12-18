@@ -184,11 +184,13 @@ class Calculator:
         except:
             pass
 
+
     def memory_subtract(self):
         try:
             self.memory -= float(self.display.get())
         except:
             pass
+
 
     def memory_recall(self):
         self.display.config(state="normal")
@@ -196,10 +198,10 @@ class Calculator:
         self.display.insert(tk.END, str(self.memory))
         self.display.config(state="readonly")
 
+
     def memory_clean(self):
-        self.display.config(state="normal")
         self.memory=0
-        self.display.config(state="readonly")
+
 
     def scientific_toggle(self):
         try:

@@ -1,66 +1,98 @@
-# 🧮 Python Dark-Mode Calculator
+# 🧮 Python Dark-Mode Scientific Calculator
 
-A sleek, desktop-based Calculator application built with **Python** and **Tkinter**.
+A modern desktop calculator application built with **Python and Tkinter**, designed with safety, clarity, and mathematical correctness in mind.
 
-This project demonstrates a robust GUI application structure using **Object-Oriented Programming (OOP)** principles. It features a modern dark theme, full keyboard support, and memory storage functions.
+This project goes beyond a basic calculator by avoiding `eval()`, implementing a custom precedence-safe expression evaluator, and demonstrating DSA concepts in mathematical operations.
 
-![Calculator Screenshot](screenshot.png)
+---
 
 ## ✨ Features
 
-- **Standard Operations:** Addition, Subtraction, Multiplication, Division.
-- **Memory Functions:**
-  - `M+`: Add current result to memory.
-  - `M-`: Subtract current result from memory.
-  - `MR`: Recall value from memory to display.
-- **Keyboard Support:** \* Full Numpad support.
-  - `Enter` to calculate.
-  - `Esc` to clear.
-  - `Backspace` to delete the last digit.
-- **Robust UI:** \* **Dark Mode** theme (#121212) for reduced eye strain.
-  - **Read-only Display:** Prevents invalid text entry while allowing programmatic updates.
-  - **Error Handling:** Gracefully handles invalid expressions (e.g., Division by Zero).
+### 🔢 Core Arithmetic
 
-## 🛠️ Technical Implementation
+- **Operations:** Addition (+), Subtraction (-), Multiplication (\*), and Division (/) with division-by-zero protection.
+- **Precision:** Full decimal number support.
+- **UI Safety:** Read-only display prevents invalid manual keyboard input corruption.
 
-The application is built using a class-based structure (`Calculator` class) to ensure code modularity and state management.
+### 🧠 Memory Operations
 
-- **Language:** Python 3.10+
-- **GUI Framework:** Tkinter (Standard Library)
-- **Architecture:** Object-Oriented (encapsulating state like `self.memory` and UI components).
-- **Input Handling:** Event binding (`<Key>`) for physical keyboard integration.
+- **M+ / M-:** Add or subtract the displayed value to/from internal memory.
+- **MR:** Recall memory value to the display.
+- **MC:** Clear memory (standard calculator behavior).
+
+### 📐 Scientific Functions
+
+- **Trigonometry:** `sin`, `cos`, `tan`.
+- **Powers:** $x^2$ (square) and $\sqrt{x}$ (square root with precision control).
+- **Toggle:** DEG / RAD mode toggle for trigonometric calculations.
+
+### 🎨 User Interface
+
+- **Dark Mode:** Sleek UI designed for reduced eye strain.
+- **Responsive:** Grid-based layout with a toggleable scientific mode.
+- **Keyboard Support:** Mapping for numbers, operators, Enter, Backspace, and Escape.
+
+---
+
+## 🔐 Engineering Choice: Why `eval()` is NOT used
+
+Python’s `eval()` can execute arbitrary code, making it a security risk. To demonstrate production-style design, this project uses a custom expression evaluator that:
+
+1.  **Only processes** valid numeric tokens and approved operators.
+2.  **Prevents execution** of unintended Python commands.
+3.  **Provides control** over error handling and mathematical precedence.
+
+### 🧮 How Operator Precedence Works
+
+The evaluator follows standard math rules (Multiplication/Division before Addition/Subtraction) using a **two-pass evaluation strategy**:
+
+1.  **Tokenization:** Converts input string into a list (e.g., `"3*5-5"` → `['3', '*', '5', '-', '5']`).
+2.  **First Pass:** Processes all `*` and `/` operations from left to right.
+3.  **Second Pass:** Processes all `+` and `-` operations on the remaining tokens.
+
+---
+
+## 📊 Data Structures & Algorithms (DSA)
+
+### Square Root ($\sqrt{x}$) Implementation
+
+Instead of relying solely on `math.sqrt()`, this project demonstrates algorithmic thinking via:
+
+- **Binary Search:** Finding the integer part of the square root in $O(\log n)$ time.
+- **Incremental Refinement:** Improving decimal precision digit-by-digit.
+
+### DEG vs RAD Logic
+
+Trigonometric functions operate in radians internally. This calculator uses a state-based toggle to decide whether to convert user input using `math.radians()` before processing, ensuring consistent behavior across all functions.
+
+---
+
+## ⚠️ Known Limitations (Intentional)
+
+To keep the evaluator logic clean and focused on binary operations, the following are intentionally out of scope:
+
+- **Unary Operators:** e.g., `-3 + 5` (input requires `0 - 3 + 5`).
+- **Parentheses:** e.g., `(2+3)*4`.
+
+---
 
 ## 🚀 How to Run
 
-1.  **Clone the repository:**
+1. **Clone the repository**
+   ```bash
+   git clone [https://github.com/SankalpHaritash21/Calculator.git](Chttps://github.com/SankalpHaritash21/Calculator.git)
+   cd python-dark-calculator
+   ```
 
-    ```bash
-    git clone [https://github.com/your-username/calculator-project.git](https://github.com/your-username/calculator-project.git)
-    cd calculator-project
-    ```
-
-2.  **Run the application:**
-    ```bash
-    python calculator.py
-    ```
-
-## 🕹️ Controls
-
-| Button          | Action           | Keyboard Shortcut            |
-| :-------------- | :--------------- | :--------------------------- |
-| **0-9**         | Enter numbers    | `0` - `9` (Numpad supported) |
-| **+, -, \*, /** | Operators        | `+`, `-`, `*`, `/`           |
-| **=**           | Calculate Result | `Enter`                      |
-| **C**           | Clear All        | `Esc`                        |
-| **<-**          | Backspace        | `Backspace`                  |
-
-## 🔮 Future Improvements
-
-- [ ] Refactor `eval()` to a safer expression parser for security.
-- [ ] Add a "History" side-panel to view previous calculations.
-- [ ] Add Scientific functions (sin, cos, tan).
-- [ ] Package as a standalone `.exe` using PyInstaller.
-
-## 📝 License
-
-This project is open-source and available under the [MIT License](LICENSE).
+<table border="0">
+  <tr>
+    <td>
+      <p align="center"><b>Basic Mode</b></p>
+      <img src="./images/1.png" width="350" />
+    </td>
+    <td>
+      <p align="center"><b>Scientific Mode</b></p>
+      <img src="./images/2.png" width="350" />
+    </td>
+  </tr>
+</table>
