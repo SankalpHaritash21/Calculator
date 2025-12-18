@@ -25,7 +25,8 @@ class Calculator:
         self.memory_buttons=[
             ("M+", self.memory_add),
             ("M-", self.memory_subtract),
-            ("MR", self.memory_recall)
+            ("MR", self.memory_recall),
+            ("MC", self.memory_clean)
         ]
 
         self.scientific_buttons=['sin', 'cos', 'tan', 'log', "√", "x²"]
@@ -35,7 +36,7 @@ class Calculator:
         self.memory=0 #State Variable Example
         self.scientific_mode= False
         self.root.title("Calculator")
-        self.root.geometry("400x500")
+        self.root.geometry("400x550")
         self.root.resizable(False, False)
         self.root.config(bg="#121212")
         self.display= tk.Entry(root,
@@ -48,7 +49,8 @@ class Calculator:
             highlightthickness=1,
             highlightbackground="#333333",
             highlightcolor="#333333",
-            readonlybackground="#1E1E1E")
+            readonlybackground="#1E1E1E",
+            )
         
         self.display.config(state="readonly")
         self.display.pack(fill='x', padx=10, pady=10)
@@ -107,7 +109,7 @@ class Calculator:
             btn = tk.Button(
                 self.button_frame,
                 text=text,
-                font=("Arial", 18),
+                font=("Arial", 10),
                 width=5,
                 height=2,
                 bg="#444444",
@@ -194,6 +196,11 @@ class Calculator:
         self.display.insert(tk.END, str(self.memory))
         self.display.config(state="readonly")
 
+    def memory_clean(self):
+        self.display.config(state="normal")
+        self.memory=0
+        self.display.config(state="readonly")
+
     def scientific_toggle(self):
         try:
             self.scientific_mode= not self.scientific_mode
@@ -202,10 +209,9 @@ class Calculator:
                 self.root.geometry("400x700")
             else:
                 self.scientific_frame.pack_forget()
-                self.root.geometry("400x500")           
+                self.root.geometry("400x550")           
         except:
             pass
-
 
 
 
@@ -238,16 +244,80 @@ class Calculator:
         self.display.delete(0, tk.END)
         self.display.config(state="readonly")
 
+    def process_mul_div(self, tokens):
+        result=[]
+
+        i=0
+
+        while i < len(tokens):
+            if tokens[i] == '*':
+                left= float(result.pop())
+                right= float(tokens[i+1])
+                result.append(str(left * right))
+                i+=2
+            elif tokens[i] == '/':
+                left= float(result.pop())
+                right= float(tokens[i+1])
+                if right == 0:
+                    raise ValueError("Division By Zero")
+                result.append(str(left / right))
+                i+=2
+            else:
+                result.append(tokens[i])
+                i+=1
+
+        return result
+
+    def process_add_sub(self,tokens):
+        result=float(tokens[0])
+        i=1
+
+        while i< len(tokens):
+            if tokens[i]=='+':
+                result += float(tokens[i+1])
+            elif tokens[i]=='-':
+                result -= float(tokens[i+1])
+            i+=2
+
+        return result
+
+    def tokenize(self,expression):
+        tokens=[]
+        num=""
+        for ch in expression:
+            if ch.isdigit() or ch=='.':
+                num+=ch
+            else:
+                tokens.append(num)
+                tokens.append(ch)
+                num=""
+
+        if num == "":
+            raise ValueError("Invalid Expression")
+
+        tokens.append(num)
+        return tokens
+
+
+
+    def safe_eval(self, expression):
+        tokens= self.tokenize(expression)
+        tokens= self.process_mul_div(tokens)
+        result= self.process_add_sub(tokens)
+        return result
+
     def calculate(self):
         self.display.config(state="normal")
         try:
-            result= eval(self.display.get())
+            result= self.safe_eval(self.display.get())
             self.display.delete(0, tk.END)
             self.display.insert(tk.END, str(result))
         except:
             self.display.delete(0, tk.END)
             self.display.insert(tk.END, "Error")
         self.display.config(state="readonly")
+
+    
 
     def delete_last(self):
         self.display.config(state="normal")
@@ -401,15 +471,6 @@ class Calculator:
         else:
             self.angle_mode='DEG'
         self.angle_button.config(text=self.angle_mode)   
-
-
-
-
-
-
-
-
-
 
 
 app= Calculator(root)
