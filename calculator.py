@@ -214,7 +214,6 @@ class Calculator:
             pass
 
 
-
     def press(self, key):
         self.display.config(state="normal")
         current= self.display.get()
@@ -239,10 +238,12 @@ class Calculator:
         self.display.insert(tk.END, key)
         self.display.config(state="readonly")
 
+
     def clear(self):
         self.display.config(state="normal")
         self.display.delete(0, tk.END)
         self.display.config(state="readonly")
+
 
     def process_mul_div(self, tokens):
         result=[]
@@ -268,6 +269,7 @@ class Calculator:
 
         return result
 
+
     def process_add_sub(self,tokens):
         result=float(tokens[0])
         i=1
@@ -280,6 +282,7 @@ class Calculator:
             i+=2
 
         return result
+
 
     def tokenize(self,expression):
         tokens=[]
@@ -299,12 +302,12 @@ class Calculator:
         return tokens
 
 
-
     def safe_eval(self, expression):
         tokens= self.tokenize(expression)
         tokens= self.process_mul_div(tokens)
         result= self.process_add_sub(tokens)
         return result
+
 
     def calculate(self):
         self.display.config(state="normal")
@@ -316,7 +319,6 @@ class Calculator:
             self.display.delete(0, tk.END)
             self.display.insert(tk.END, "Error")
         self.display.config(state="readonly")
-
     
 
     def delete_last(self):
@@ -327,6 +329,7 @@ class Calculator:
             self.display.delete(len(current)-1, tk.END)
 
         self.display.config(state="readonly")
+
 
     def keyboard_handler(self, event):
         key = event.keysym
@@ -340,6 +343,7 @@ class Calculator:
             self.delete_last()
         elif key == "Escape":
             self.clear()
+
 
     def handle_sqrt(self):
         self.display.config(state="normal")
@@ -358,6 +362,7 @@ class Calculator:
             self.display.insert(tk.END, "Error")
 
         self.display.config(state="readonly")
+
 
     def sqrt_init(self, num):
         """
@@ -384,7 +389,8 @@ class Calculator:
         
 
         return ans
-    
+
+
     def sqrt(self, num, precision=5):
         """
         Calculates square root with adjustable precision.
@@ -405,6 +411,7 @@ class Calculator:
             increment /= 10
 
         return root
+
 
     def square(self):
         """
@@ -432,11 +439,14 @@ class Calculator:
             self.display.insert(tk.END, "Error")
         self.display.config(state="readonly")
 
+
     def sin(self):
         self.apply_trig(math.sin)
 
+
     def cos(self):
         self.apply_trig(math.cos)       
+
 
     def tan(self):
         self.apply_trig(math.tan, need_guard=True)
@@ -464,6 +474,7 @@ class Calculator:
             self.display.insert(tk.END, "Error")
 
         self.display.config(state="readonly")
+
 
     def toggle_angle_mode(self):
         if self.angle_mode=='DEG':
